@@ -1,0 +1,52 @@
+# Ambiente Virtual
+venv/
+env/
+.venv
+ENV/
+
+# Python - Cache e compilados
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# Testes
+.pytest_cache/
+.coverage
+htmlcov/
+.hypothesis/
+
+# IDE e Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Variáveis de Ambiente
+.env
+.env.local
+.env.*.local
+
+# Banco de dados
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Arquivos do sistema
+CACHEDIR.TAG
+Thumbs.db
+.DS_Store
+
+# Arquivos temporários
+*.tmp
+*.bak
