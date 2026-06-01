@@ -1,12 +1,13 @@
 from flask import Flask
 from pymongo import MongoClient
-
+from flask_cors import CORS
 
 
 db = None
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object('config.Config')
     global db
     

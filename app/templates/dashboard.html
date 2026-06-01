@@ -1,0 +1,449 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0e0e10;--bg2:#17171a;--bg3:#1e1e22;--border:#2a2a2e;
+    --text:#e8e8ec;--muted:#6b6b72;--accent:#7f77dd;--accent2:#1d9e75;
+    --danger:#e24b4a;--warn:#ef9f27;--info:#378add;
+    --font:'Syne',sans-serif;--mono:'DM Mono',monospace;
+  }
+  body{background:var(--bg);font-family:var(--font);color:var(--text);min-height:600px;display:flex;flex-direction:column}
+  .app{display:flex;min-height:600px}
+  .sidebar{width:200px;background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+  .logo{padding:20px 16px 16px;border-bottom:0.5px solid var(--border)}
+  .logo-title{font-size:15px;font-weight:600;letter-spacing:0.02em;color:var(--text)}
+  .logo-sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+  .nav{padding:12px 8px;flex:1}
+  .nav-section{font-size:10px;color:var(--muted);font-family:var(--mono);padding:0 8px;margin:16px 0 4px;letter-spacing:0.08em}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--muted);transition:all 0.15s;border:none;background:none;width:100%;text-align:left}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{background:rgba(127,119,221,0.12);color:var(--accent)}
+  .nav-item i{font-size:15px;width:16px}
+  .badge{margin-left:auto;background:rgba(127,119,221,0.15);color:var(--accent);font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:10px}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:48px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg2)}
+  .topbar-title{font-size:13px;font-weight:500;color:var(--text)}
+  .token-badge{font-size:11px;font-family:var(--mono);background:rgba(29,158,117,0.12);color:var(--accent2);padding:4px 10px;border-radius:20px;border:0.5px solid rgba(29,158,117,0.25)}
+  .content{flex:1;padding:20px;overflow-y:auto}
+  .page{display:none}
+  .page.active{display:block}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .section-title{font-size:14px;font-weight:500}
+  .btn{font-family:var(--font);font-size:12px;padding:6px 14px;border-radius:6px;border:0.5px solid var(--border);background:var(--bg3);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-primary:hover{background:#6b63c4;color:#fff}
+  .btn-danger{background:rgba(226,75,74,0.1);color:var(--danger);border-color:rgba(226,75,74,0.25)}
+  .btn-danger:hover{background:rgba(226,75,74,0.2)}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:14px 16px}
+  .stat-label{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:6px}
+  .stat-value{font-size:22px;font-weight:500}
+  .stat-sub{font-size:11px;color:var(--muted);margin-top:3px}
+  .stat-green{color:var(--accent2)}
+  .stat-purple{color:var(--accent)}
+  .stat-blue{color:var(--info)}
+  .table-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:10px 14px;text-align:left;font-size:11px;color:var(--muted);font-family:var(--mono);font-weight:400;border-bottom:0.5px solid var(--border);letter-spacing:0.05em}
+  td{padding:10px 14px;border-bottom:0.5px solid var(--border);color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.02)}
+  .pill{font-size:11px;font-family:var(--mono);padding:2px 8px;border-radius:10px;display:inline-block}
+  .pill-green{background:rgba(29,158,117,0.12);color:var(--accent2)}
+  .pill-blue{background:rgba(55,138,221,0.12);color:var(--info)}
+  .pill-amber{background:rgba(239,159,39,0.12);color:var(--warn)}
+  .form-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:20px;max-width:500px}
+  .form-row{margin-bottom:14px}
+  .form-label{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:6px;display:block;letter-spacing:0.05em}
+  .form-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--text);font-family:var(--font);outline:none;transition:border 0.15s}
+  .form-input:focus{border-color:var(--accent)}
+  .endpoint-tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;margin-right:6px}
+  .get{background:rgba(29,158,117,0.12);color:var(--accent2)}
+  .post{background:rgba(55,138,221,0.12);color:var(--info)}
+  .del{background:rgba(226,75,74,0.12);color:var(--danger)}
+  .put{background:rgba(239,159,39,0.12);color:var(--warn)}
+  .endpoint-row{display:flex;align-items:center;padding:10px 14px;border-bottom:0.5px solid var(--border);font-size:12px;font-family:var(--mono);color:var(--muted)}
+  .endpoint-row:last-child{border-bottom:none}
+  .endpoint-row:hover{background:rgba(255,255,255,0.02)}
+  .endpoint-path{color:var(--text);margin-left:4px}
+  .divider{height:0.5px;background:var(--border);margin:16px 0}
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+  .upload-area{border:1px dashed var(--border);border-radius:8px;padding:40px;text-align:center;cursor:pointer;transition:all 0.15s}
+  .upload-area:hover{border-color:var(--accent);background:rgba(127,119,221,0.04)}
+  .upload-icon{font-size:32px;color:var(--muted);margin-bottom:12px}
+  .upload-text{font-size:13px;color:var(--muted)}
+  .result-box{background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:12px 14px;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--accent2);display:none}
+  .login-wrap{display:flex;align-items:center;justify-content:center;min-height:500px}
+  .login-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:32px;width:340px}
+  .login-logo{font-size:20px;font-weight:600;color:var(--accent);margin-bottom:4px}
+  .login-sub{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:var(--mono)}
+  .error-msg{font-size:12px;color:var(--danger);margin-top:8px;display:none;font-family:var(--mono)}
+  .action-wrap{display:flex;gap:6px}
+</style>
+
+<h2 class="sr-only">StyleSync API Dashboard — gerenciamento de produtos, categorias, usuários e upload de vendas</h2>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-title">StyleSync</div>
+      <div class="logo-sub">API Dashboard</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">GERAL</div>
+      <button class="nav-item active" onclick="goTo('home',this)"><i class="ti ti-home" aria-hidden="true"></i> Home</button>
+      <button class="nav-item" onclick="goTo('endpoints',this)"><i class="ti ti-api" aria-hidden="true"></i> Endpoints</button>
+      <div class="nav-section">DADOS</div>
+      <button class="nav-item" onclick="goTo('products',this)"><i class="ti ti-shirt" aria-hidden="true"></i> Produtos</button>
+      <button class="nav-item" onclick="goTo('categories',this)"><i class="ti ti-tag" aria-hidden="true"></i> Categorias</button>
+      <button class="nav-item" onclick="goTo('users',this)"><i class="ti ti-users" aria-hidden="true"></i> Usuários</button>
+      <div class="nav-section">VENDAS</div>
+      <button class="nav-item" onclick="goTo('upload',this)"><i class="ti ti-upload" aria-hidden="true"></i> Upload CSV</button>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="page-title">Home</span>
+      <span class="token-badge" id="token-status">● sem token</span>
+    </div>
+
+    <div class="content">
+
+      <div class="page active" id="page-home">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">PRODUTOS</div>
+            <div class="stat-value stat-purple">—</div>
+            <div class="stat-sub">GET /products</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">CATEGORIAS</div>
+            <div class="stat-value stat-green">—</div>
+            <div class="stat-sub">GET /categorys/all</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">USUÁRIOS</div>
+            <div class="stat-value stat-blue">—</div>
+            <div class="stat-sub">GET /user/all</div>
+          </div>
+        </div>
+        <div class="section-header">
+          <div class="section-title">Login</div>
+        </div>
+        <div class="form-wrap">
+          <div class="form-row">
+            <label class="form-label">USUÁRIO</label>
+            <input class="form-input" id="login-user" placeholder="admin" value="admin">
+          </div>
+          <div class="form-row">
+            <label class="form-label">SENHA</label>
+            <input class="form-input" type="password" id="login-pass" placeholder="supersecret" value="supersecret">
+          </div>
+          <div class="form-row">
+            <label class="form-label">BASE URL</label>
+            <input class="form-input" id="base-url" placeholder="http://localhost:5000" value="http://localhost:5000">
+          </div>
+          <div class="error-msg" id="login-error">Credenciais inválidas ou servidor fora do ar</div>
+          <div style="margin-top:4px">
+            <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login" aria-hidden="true"></i> Autenticar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-endpoints">
+        <div class="table-wrap">
+          <div class="endpoint-row"><span class="endpoint-tag post">POST</span><span class="endpoint-path">/login</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag get">GET</span><span class="endpoint-path">/products</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag post">POST</span><span class="endpoint-path">/products</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag get">GET</span><span class="endpoint-path">/products/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag put">PUT</span><span class="endpoint-path">/product/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag del">DEL</span><span class="endpoint-path">/product/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag get">GET</span><span class="endpoint-path">/categorys/all</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag post">POST</span><span class="endpoint-path">/categorys/</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag get">GET</span><span class="endpoint-path">/categorys/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag del">DEL</span><span class="endpoint-path">/categorys/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag get">GET</span><span class="endpoint-path">/user/all</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag post">POST</span><span class="endpoint-path">/user</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag del">DEL</span><span class="endpoint-path">/user/:id</span></div>
+          <div class="endpoint-row"><span class="endpoint-tag post">POST</span><span class="endpoint-path">/sales/upload</span></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-products">
+        <div class="section-header">
+          <div class="section-title">Produtos</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="loadProducts()"><i class="ti ti-refresh" aria-hidden="true"></i> Carregar</button>
+            <button class="btn btn-primary" onclick="showProductForm()"><i class="ti ti-plus" aria-hidden="true"></i> Novo</button>
+          </div>
+        </div>
+        <div id="product-form-wrap" style="display:none;margin-bottom:16px">
+          <div class="form-wrap">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-row"><label class="form-label">NOME</label><input class="form-input" id="p-name" placeholder="Camiseta"></div>
+              <div class="form-row"><label class="form-label">PREÇO</label><input class="form-input" id="p-price" placeholder="99.90" type="number"></div>
+              <div class="form-row"><label class="form-label">ESTOQUE</label><input class="form-input" id="p-stock" placeholder="10" type="number"></div>
+              <div class="form-row"><label class="form-label">DESCRIÇÃO</label><input class="form-input" id="p-desc" placeholder="opcional"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-primary" onclick="createProduct()"><i class="ti ti-check" aria-hidden="true"></i> Criar</button>
+              <button class="btn" onclick="document.getElementById('product-form-wrap').style.display='none'">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>NOME</th><th>PREÇO</th><th>ESTOQUE</th><th>ID</th><th></th></tr></thead>
+            <tbody id="products-body"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">clique em "Carregar" para buscar produtos</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="page-categories">
+        <div class="section-header">
+          <div class="section-title">Categorias</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="loadCategories()"><i class="ti ti-refresh" aria-hidden="true"></i> Carregar</button>
+            <button class="btn btn-primary" onclick="showCatForm()"><i class="ti ti-plus" aria-hidden="true"></i> Nova</button>
+          </div>
+        </div>
+        <div id="cat-form-wrap" style="display:none;margin-bottom:16px">
+          <div class="form-wrap">
+            <div class="form-row"><label class="form-label">NOME</label><input class="form-input" id="c-name" placeholder="Camisetas"></div>
+            <div class="form-row"><label class="form-label">DESCRIÇÃO</label><input class="form-input" id="c-desc" placeholder="opcional"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" onclick="createCategory()"><i class="ti ti-check" aria-hidden="true"></i> Criar</button>
+              <button class="btn" onclick="document.getElementById('cat-form-wrap').style.display='none'">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>NOME</th><th>DESCRIÇÃO</th><th>ID</th><th></th></tr></thead>
+            <tbody id="categories-body"><tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">clique em "Carregar" para buscar categorias</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="page-users">
+        <div class="section-header">
+          <div class="section-title">Usuários</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="loadUsers()"><i class="ti ti-refresh" aria-hidden="true"></i> Carregar</button>
+            <button class="btn btn-primary" onclick="showUserForm()"><i class="ti ti-plus" aria-hidden="true"></i> Novo</button>
+          </div>
+        </div>
+        <div id="user-form-wrap" style="display:none;margin-bottom:16px">
+          <div class="form-wrap">
+            <div class="form-row"><label class="form-label">NOME</label><input class="form-input" id="u-name" placeholder="joão"></div>
+            <div class="form-row"><label class="form-label">SENHA</label><input class="form-input" id="u-pass" placeholder="senha123" type="password"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" onclick="createUser()"><i class="ti ti-check" aria-hidden="true"></i> Criar</button>
+              <button class="btn" onclick="document.getElementById('user-form-wrap').style.display='none'">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>NOME</th><th>ID</th><th></th></tr></thead>
+            <tbody id="users-body"><tr><td colspan="3" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">clique em "Carregar" para buscar usuários</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="page-upload">
+        <div class="section-header">
+          <div class="section-title">Upload de Vendas CSV</div>
+        </div>
+        <div class="upload-area" onclick="document.getElementById('csv-input').click()">
+          <div class="upload-icon"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+          <div class="upload-text">Clique para selecionar um arquivo .csv</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono)">sale_date, product_id, quantity, total_value</div>
+          <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(this)">
+        </div>
+        <div class="result-box" id="upload-result"></div>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary" id="send-csv-btn" style="display:none" onclick="uploadCSV()"><i class="ti ti-upload" aria-hidden="true"></i> Enviar para API</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let token = null;
+let baseUrl = 'http://localhost:5000';
+let selectedFile = null;
+
+function getBase(){return document.getElementById('base-url').value||baseUrl}
+
+function goTo(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(btn)btn.classList.add('active');
+  const titles={home:'Home',endpoints:'Endpoints',products:'Produtos',categories:'Categorias',users:'Usuários',upload:'Upload CSV'};
+  document.getElementById('page-title').textContent=titles[page]||page;
+}
+
+function headers(){
+  const h={'Content-Type':'application/json'};
+  if(token)h['Authorization']='Bearer '+token;
+  return h;
+}
+
+async function doLogin(){
+  const u=document.getElementById('login-user').value;
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  err.style.display='none';
+  try{
+    const r=await fetch(getBase()+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:u,password:p})});
+    const d=await r.json();
+    if(d.access_token){
+      token=d.access_token;
+      document.getElementById('token-status').textContent='● autenticado';
+      document.getElementById('token-status').style.background='rgba(29,158,117,0.15)';
+      document.getElementById('token-status').style.color='var(--accent2)';
+    }else{err.style.display='block'}
+  }catch(e){err.style.display='block'}
+}
+
+async function loadProducts(){
+  try{
+    const r=await fetch(getBase()+'/products',{headers:headers()});
+    const d=await r.json();
+    const b=document.getElementById('products-body');
+    if(!d.length){b.innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">nenhum produto encontrado</td></tr>';return}
+    b.innerHTML=d.map(p=>`<tr>
+      <td>${p.name}</td>
+      <td>R$ ${Number(p.price).toFixed(2).replace('.',',')}</td>
+      <td><span class="pill ${p.stock>0?'pill-green':'pill-amber'}">${p.stock}</span></td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${(p._id||'').substring(0,12)}...</td>
+      <td><div class="action-wrap"><button class="btn btn-danger" onclick="deleteProduct('${p._id}')"><i class="ti ti-trash" aria-hidden="true"></i></button></div></td>
+    </tr>`).join('');
+  }catch(e){showError('products-body',5)}
+}
+
+async function createProduct(){
+  if(!token){alert('Faça login primeiro!');return}
+  const body={name:document.getElementById('p-name').value,price:parseFloat(document.getElementById('p-price').value),stock:parseInt(document.getElementById('p-stock').value),description:document.getElementById('p-desc').value};
+  try{
+    await fetch(getBase()+'/products',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+    document.getElementById('product-form-wrap').style.display='none';
+    loadProducts();
+  }catch(e){alert('Erro ao criar produto')}
+}
+
+async function deleteProduct(id){
+  if(!token){alert('Faça login primeiro!');return}
+  if(!confirm('Deletar produto?'))return;
+  try{
+    await fetch(getBase()+'/product/'+id,{method:'DELETE',headers:headers()});
+    loadProducts();
+  }catch(e){alert('Erro ao deletar')}
+}
+
+async function loadCategories(){
+  try{
+    const r=await fetch(getBase()+'/categorys/all',{headers:headers()});
+    const d=await r.json();
+    const b=document.getElementById('categories-body');
+    if(!d.length){b.innerHTML='<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">nenhuma categoria encontrada</td></tr>';return}
+    b.innerHTML=d.map(c=>`<tr>
+      <td>${c.name}</td>
+      <td style="color:var(--muted)">${c.description||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${(c._id||'').substring(0,12)}...</td>
+      <td><button class="btn btn-danger" onclick="deleteCategory('${c._id}')"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`).join('');
+  }catch(e){showError('categories-body',4)}
+}
+
+async function createCategory(){
+  if(!token){alert('Faça login primeiro!');return}
+  const body={name:document.getElementById('c-name').value,description:document.getElementById('c-desc').value};
+  try{
+    await fetch(getBase()+'/categorys/',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+    document.getElementById('cat-form-wrap').style.display='none';
+    loadCategories();
+  }catch(e){alert('Erro ao criar categoria')}
+}
+
+async function deleteCategory(id){
+  if(!token){alert('Faça login primeiro!');return}
+  if(!confirm('Deletar categoria?'))return;
+  try{
+    await fetch(getBase()+'/categorys/'+id,{method:'DELETE',headers:headers()});
+    loadCategories();
+  }catch(e){alert('Erro')}
+}
+
+async function loadUsers(){
+  if(!token){alert('Faça login primeiro!');return}
+  try{
+    const r=await fetch(getBase()+'/user/all',{headers:headers()});
+    const d=await r.json();
+    const b=document.getElementById('users-body');
+    if(!d.length){b.innerHTML='<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--muted);font-size:12px">nenhum usuário encontrado</td></tr>';return}
+    b.innerHTML=d.map(u=>`<tr>
+      <td>${u.name}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${(u._id||'').substring(0,12)||'—'}...</td>
+      <td><button class="btn btn-danger" onclick="deleteUser('${u._id}')"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`).join('');
+  }catch(e){showError('users-body',3)}
+}
+
+async function createUser(){
+  if(!token){alert('Faça login primeiro!');return}
+  const body={name:document.getElementById('u-name').value,password:document.getElementById('u-pass').value};
+  try{
+    await fetch(getBase()+'/user',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+    document.getElementById('user-form-wrap').style.display='none';
+    loadUsers();
+  }catch(e){alert('Erro ao criar usuário')}
+}
+
+async function deleteUser(id){
+  if(!token){alert('Faça login primeiro!');return}
+  if(!confirm('Deletar usuário?'))return;
+  try{
+    await fetch(getBase()+'/user/'+id,{method:'DELETE',headers:headers()});
+    loadUsers();
+  }catch(e){alert('Erro')}
+}
+
+function handleCSV(input){
+  if(input.files[0]){
+    selectedFile=input.files[0];
+    document.getElementById('upload-result').style.display='block';
+    document.getElementById('upload-result').textContent='Arquivo selecionado: '+selectedFile.name;
+    document.getElementById('send-csv-btn').style.display='inline-flex';
+  }
+}
+
+async function uploadCSV(){
+  if(!token){alert('Faça login primeiro!');return}
+  if(!selectedFile)return;
+  const fd=new FormData();
+  fd.append('file',selectedFile);
+  try{
+    const r=await fetch(getBase()+'/sales/upload',{method:'POST',headers:{'Authorization':'Bearer '+token},body:fd});
+    const d=await r.json();
+    const box=document.getElementById('upload-result');
+    box.style.display='block';
+    box.style.color=d.erros_encontrados&&d.erros_encontrados.length?'var(--warn)':'var(--accent2)';
+    box.textContent=JSON.stringify(d,null,2);
+  }catch(e){alert('Erro no upload')}
+}
+
+function showProductForm(){document.getElementById('product-form-wrap').style.display='block'}
+function showCatForm(){document.getElementById('cat-form-wrap').style.display='block'}
+function showUserForm(){document.getElementById('user-form-wrap').style.display='block'}
+
+function showError(id,cols){
+  document.getElementById(id).innerHTML=`<tr><td colspan="${cols}" style="text-align:center;padding:32px;color:var(--danger);font-size:12px">erro ao conectar com o servidor</td></tr>`;
+}
+</script>

@@ -11,9 +11,14 @@ from app import db
 from app.decorators import token_required
 from app.models.product import *
 from app.models.sales import Sales
+from flask import render_template  # adiciona no topo
 
 
 main_bp = Blueprint('main_bp',__name__)
+
+@main_bp.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
 
 # RF: O sistema deve permitir que um usuário se autentique para obter um token
 @main_bp.route('/login', methods=['POST'])
