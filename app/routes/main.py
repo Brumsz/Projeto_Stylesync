@@ -129,10 +129,10 @@ def upload_sales(token):
 
     file = request.files['file']
 
-    if file.name == '':
+    if file.filename == '':
         return jsonify({'Erro':'Nenhum arquivo selecionado'}),400
     
-    if file and file.name.endswith('.csv'):
+    if file and file.filename.endswith('.csv'):
         csv_stream = io.StringIO(file.stream.read().decode('UTF-8'),newline=None)
         csv_reader = csv.DictReader(csv_stream)
 
